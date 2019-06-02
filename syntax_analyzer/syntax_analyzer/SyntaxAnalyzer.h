@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <stack>
 #include "FileManager.h"
 
 class SyntaxAnalyzer
@@ -53,14 +54,16 @@ class SyntaxAnalyzer
 
 	std::vector<std::string> _symbolTable;
 	std::vector<std::vector<std::string>> _llTable;
+	std::stack<std::string> _stack;
 
 private:
 	void ComputeSymbolTable(std::string const &);
 	void FillLLTable();
+	void FillStack(std::string const &);
 
 	int StringToTerminal(std::string const &) const;
 	int StringToNonTerminal(std::string const &) const;
-	std::string const &TokenToTerminal(std::string const &) const;
+	std::string TokenToTerminal(std::string const &) const;
 
 public:
 	SyntaxAnalyzer(std::string const &);

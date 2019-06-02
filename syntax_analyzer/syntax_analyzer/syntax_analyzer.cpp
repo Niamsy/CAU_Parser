@@ -16,6 +16,7 @@ int main(int ac, char **av)
 		SyntaxAnalyzer parser(av[1]);
 
 		parser.Go();
+
 	}
 	catch (std::exception &e)
 	{

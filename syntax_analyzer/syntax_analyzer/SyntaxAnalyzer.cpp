@@ -2,7 +2,7 @@
 #include "SyntaxAnalyzer.h"
 
 SyntaxAnalyzer::SyntaxAnalyzer(std::string const &filePath) :
-	_llTable(NRETURN + 1, std::vector<std::string>(ENDMARKER + 1))
+	_llTable(NRETURN + 1, std::vector<std::string>(ENDMARKER + 1, ""))
 {
 	auto fileManager = new FileManager();
 	fileManager->Open(filePath);
@@ -20,11 +20,7 @@ void SyntaxAnalyzer::ComputeSymbolTable(std::string const &symbolTableSource)
 	while (std::getline(iss, line)) {
 		_symbolTable.push_back(line);
 	}
-
-	std::cout << "Symbol table just with tokens : " << std::endl;
-	for (auto &token : _symbolTable) {
-		std::cout << token << std::endl;
-	}
+	_symbolTable.push_back("e");
 }
 
 void SyntaxAnalyzer::FillLLTable()
@@ -45,7 +41,7 @@ void SyntaxAnalyzer::FillLLTable()
 	_llTable[BLOCK][RETURN] = "e";
 	_llTable[BLOCK][RBRACE] = "e";
 	_llTable[STMT][VTYPE] = "vtype id semi";
-	_llTable[STMT][ID] = "if RHSORFCALL semi";
+	_llTable[STMT][ID] = "id RHSORFCALL semi";
 	_llTable[STMT][IF] = "if lparen COND rparen lbrace BLOCK rbrace else lbrace BLOCK rbrace";
 	_llTable[STMT][WHILE] = "while lparen COND rparen lbrace BLOCK rbrace";
 	_llTable[RHS][NUM] = "EXPR";
@@ -73,27 +69,98 @@ void SyntaxAnalyzer::FillLLTable()
 	_llTable[NRETURN][RETURN] = "return FACTOR semi";
 }
 
-int SyntaxAnalyzer::StringToTerminal(std::string const &) const
-{
-	// TODO: insérer une instruction return ici
 
+int SyntaxAnalyzer::StringToTerminal(std::string const &str) const
+{
+	if (str == "vtype")
+		return VTYPE;
+	else if (str == "num")
+		return NUM;
+	else if (str == "literal")
+		return LITERAL;
+	else if (str == "id")
+		return ID;
+	else if (str == "if")
+		return IF;
+	else if (str == "else")
+		return ELSE;
+	else if (str == "while")
+		return WHILE;
+	else if (str == "return")
+		return RETURN;
+	else if (str == "addsub")
+		return ADDSUB;
+	else if (str == "multdiv")
+		return MULTDIV;
+	else if (str == "assign")
+		return ASSIGN;
+	else if (str == "comp")
+		return COMP;
+	else if (str == "semi")
+		return SEMI;
+	else if (str == "comma")
+		return COMMA;
+	else if (str == "lparen")
+		return LPAREN;
+	else if (str == "rparen")
+		return RPAREN;
+	else if (str == "lbrace")
+		return LBRACE;
+	else if (str == "rbrace")
+		return RBRACE;
+	else if (str == "e")
+		return ENDMARKER;
+	else
+		throw std::exception("Error: Invalid terminal.");
 }
 
-int SyntaxAnalyzer::StringToNonTerminal(std::string const &) const
+int SyntaxAnalyzer::StringToNonTerminal(std::string const &str) const
 {
-	// TODO: insérer une instruction return ici
+	if (str == "CODE")
+		return CODE;
+	else if (str == "DECL")
+		return DECL;
+	else if (str == "ARG")
+		return ARG;
+	else if (str == "MOREARGS")
+		return MOREARGS;
+	else if (str == "BLOCK")
+		return BLOCK;
+	else if (str == "STMT")
+		return STMT;
+	else if (str == "RHS")
+		return RHS;
+	else if (str == "RHSORFCALL")
+		return RHSORFCALL;
+	else if (str == "EXPR")
+		return EXPR;
+	else if (str == "EXPR2")
+		return EXPR2;
+	else if (str == "TERM")
+		return TERM;
+	else if (str == "TERM2")
+		return TERM2;
+	else if (str == "FACTOR")
+		return FACTOR;
+	else if (str == "COND")
+		return COND;
+	else if (str == "RETURN")
+		return NRETURN;
+	else
+		throw std::exception("Error: Invalid non terminal.");
 }
 
 
-std::string const & SyntaxAnalyzer::TokenToTerminal(std::string const &line) const
+std::string SyntaxAnalyzer::TokenToTerminal(std::string const &line) const
 {
-	// TODO: insérer une instruction return ici
 	std::string value;
 	std::string token;
 
 	token = line.substr(0, line.find('\t'));
-	value = line.substr(line.find('\t'));
+	value = line.substr(line.find('\t') + 1, line.size() - 1);
 	std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+
+	std::cout << "token : " << token << " value : \"" << value << "\"" << std::endl;
 
 	if (token == "ID")
 		return "id";
@@ -101,17 +168,17 @@ std::string const & SyntaxAnalyzer::TokenToTerminal(std::string const &line) con
 		return "vtype";
 	else if (token == "CHAR")
 		return "vtype";
-	else if (token == "NUMBER")
+	else if (token == "INTEGER")
 		return "num";
 	else if (token == "STRING")
 		return "literal";
-	else if (token == "KEYWORD" && value == "while")
+	else if (token == "KEYWORD" && value.find("while") == 0)
 		return "while";
-	else if (token == "KEYWORD" && value == "if")
+	else if (token == "KEYWORD" && value.find("if") == 0)
 		return "if";
-	else if (token == "KEYWORD" && value == "else")
+	else if (token == "KEYWORD" && value.find("else") == 0)
 		return "else";
-	else if (token == "KEYWORD" && value == "return")
+	else if (token == "KEYWORD" && value.find("return") == 0)
 		return "return";
 	else if (token == "ARITHMETIC_OPERATOR" && (value == "+" || value == "-"))
 		return "addsub";
@@ -121,7 +188,7 @@ std::string const & SyntaxAnalyzer::TokenToTerminal(std::string const &line) con
 		return "assign";
 	else if (token == "COMPARISION_OPERATOR")
 		return "comp";
-	else if (token == "SEMI_COL")
+	else if (token == "SEMICOL")
 		return "semi";
 	else if (token == "LBRACE")
 		return "lbrace";
@@ -133,9 +200,88 @@ std::string const & SyntaxAnalyzer::TokenToTerminal(std::string const &line) con
 		return "rparen";
 	else if (token == "COMMA")
 		return "comma";
+	else if (token == "e")
+		return "e";
+	else
+		throw std::exception("Error: Invalid token.");
 }
+
+void SyntaxAnalyzer::FillStack(std::string const &str)
+{
+	std::vector<std::string> splitString;
+	std::string word;
+	std::stringstream ss(str);
+
+	_stack.pop();
+	while (std::getline(ss, word, ' ')) {
+		splitString.push_back(word);
+	}
+	std::reverse(splitString.begin(), splitString.end());
+	for (auto &elem : splitString) {
+		_stack.push(elem);
+
+	}
+}
+
 
 void SyntaxAnalyzer::Go()
 {
+	std::string inputPointer;
+	std::string tableElem;
+	int lineCounter = 0;
+	int terminal;
+	int nonTerminal;
 
+	_stack.push("e");
+	_stack.push("CODE");
+
+	for (auto &elem : _symbolTable)
+	{
+		inputPointer = TokenToTerminal(elem);
+		terminal = StringToTerminal(inputPointer);
+		
+		while (_stack.top() != inputPointer)
+		{
+			std::stack<std::string> copy(_stack);
+			std::cout << "terminal: " << inputPointer << std::endl;
+			std::cout << "stack size : " << _stack.size() << std::endl;
+			while (!copy.empty()) {
+				auto e = copy.top();
+				std::cout << "[" << e << "]" << std::endl;
+				copy.pop();
+			}
+			nonTerminal = StringToNonTerminal(_stack.top());
+			tableElem = _llTable[nonTerminal][terminal];
+			if (tableElem == "e") {
+				_stack.pop();
+				continue;
+			}
+			if (tableElem.size() > 0) {
+				FillStack(tableElem);
+			}
+			else
+			{
+				std::cout << "Error line: " << lineCounter << ". Token \"" << elem << "\" should match a " << _stack.top() << "." << std::endl;
+				return;
+			}
+		}
+		std::cout << "terminal: " << inputPointer << std::endl;
+		std::cout << "stack size : " << _stack.size() << std::endl;
+		std::stack<std::string> copy(_stack);
+		while (!copy.empty()) {
+			auto e = copy.top();
+			std::cout << "[" << e << "]" << std::endl;
+			copy.pop();
+		}
+		_stack.pop();
+		lineCounter += 1;
+	}
+
+	if (!_stack.empty())
+	{
+		std::cout << "Stack not empty, grammar error" << std::endl;
+	}
+	else {
+		std::cout << "Success !" << std::endl;
+	}
 }
