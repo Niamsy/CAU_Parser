@@ -60,6 +60,7 @@ void SyntaxAnalyzer::FillLLTable()
 	_llTable[TERM][LPAREN] = "FACTOR TERM2";
 	_llTable[TERM2][ADDSUB] = "e";
 	_llTable[TERM2][MULTDIV] = "multdiv TERM";
+	_llTable[TERM2][SEMI] = "e";
 	_llTable[FACTOR][NUM] = "num";
 	_llTable[FACTOR][ID] = "id";
 	_llTable[FACTOR][LPAREN] = "lparen EXPR rparen";
@@ -186,7 +187,7 @@ std::string SyntaxAnalyzer::TokenToTerminal(std::string const &line) const
 		return "multdiv";
 	else if (token == "ASSIGNMENT_OPERATOR")
 		return "assign";
-	else if (token == "COMPARISION_OPERATOR")
+	else if (token == "COMPARISON_OPERATOR")
 		return "comp";
 	else if (token == "SEMICOL")
 		return "semi";
@@ -250,14 +251,26 @@ void SyntaxAnalyzer::Go()
 				std::cout << "[" << e << "]" << std::endl;
 				copy.pop();
 			}
-			nonTerminal = StringToNonTerminal(_stack.top());
+			try {
+				nonTerminal = StringToNonTerminal(_stack.top());
+			}
+			catch (...) {
+				std::cout << "Error line: " << lineCounter << ". Token \"" << elem << "\" should match a " << _stack.top() << "." << std::endl;
+				return;
+			}
 			tableElem = _llTable[nonTerminal][terminal];
 			if (tableElem == "e") {
 				_stack.pop();
 				continue;
 			}
 			if (tableElem.size() > 0) {
-				FillStack(tableElem);
+				try {
+					FillStack(tableElem);
+				}
+				catch (...) {
+					std::cout << "Error line: " << lineCounter << ". Token \"" << elem << "\" should match a " << _stack.top() << "." << std::endl;
+					return;
+				}
 			}
 			else
 			{
