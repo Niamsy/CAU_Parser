@@ -161,8 +161,6 @@ std::string SyntaxAnalyzer::TokenToTerminal(std::string const &line) const
 	value = line.substr(line.find('\t') + 1, line.size() - 1);
 	std::transform(value.begin(), value.end(), value.begin(), ::tolower);
 
-	std::cout << "token : " << token << " value : \"" << value << "\"" << std::endl;
-
 	if (token == "ID")
 		return "id";
 	else if (token == "INT")
@@ -243,14 +241,6 @@ void SyntaxAnalyzer::Go()
 		
 		while (_stack.top() != inputPointer)
 		{
-			std::stack<std::string> copy(_stack);
-			std::cout << "terminal: " << inputPointer << std::endl;
-			std::cout << "stack size : " << _stack.size() << std::endl;
-			while (!copy.empty()) {
-				auto e = copy.top();
-				std::cout << "[" << e << "]" << std::endl;
-				copy.pop();
-			}
 			try {
 				nonTerminal = StringToNonTerminal(_stack.top());
 			}
@@ -278,14 +268,7 @@ void SyntaxAnalyzer::Go()
 				return;
 			}
 		}
-		std::cout << "terminal: " << inputPointer << std::endl;
-		std::cout << "stack size : " << _stack.size() << std::endl;
-		std::stack<std::string> copy(_stack);
-		while (!copy.empty()) {
-			auto e = copy.top();
-			std::cout << "[" << e << "]" << std::endl;
-			copy.pop();
-		}
+		
 		_stack.pop();
 		lineCounter += 1;
 	}
