@@ -1,0 +1,16 @@
+INT	int 
+ID	main
+LPAREN	(
+RPAREN	)
+LBRACE	{
+ID	printf
+LPAREN	(
+STRING	"hello world"
+RPAREN	)
+SEMICOL	;
+KEYWORD	return 
+LPAREN	(
+INTEGER	0
+RPAREN	)
+SEMICOL	;
+RBRACE	}

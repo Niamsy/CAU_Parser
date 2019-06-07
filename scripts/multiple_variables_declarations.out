@@ -1,0 +1,15 @@
+INT	int	
+ID	main
+LPAREN	(
+RPAREN	)
+LBRACE	{
+CHAR	char 
+ID	b
+SEMICOL	;
+CHAR	char 
+ID	c
+SEMICOL	;
+KEYWORD	return 
+ID	a
+SEMICOL	;
+RBRACE	}

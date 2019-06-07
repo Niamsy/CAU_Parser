@@ -1,0 +1,7 @@
+INT	int 
+ID	main
+LPAREN	(
+RPAREN	)
+LBRACE	{
+ID	test
+RBRACE	}

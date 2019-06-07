@@ -1,0 +1,9 @@
+INT	int	
+ID	main
+LPAREN	(
+RPAREN	)
+LBRACE	{
+KEYWORD	return 
+INTEGER	0
+SEMICOL	;
+RBRACE	}

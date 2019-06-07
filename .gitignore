@@ -27,7 +27,6 @@
 *.lib
 
 # Executables
-*.out
 *.app
 
 # Visual Studio Files

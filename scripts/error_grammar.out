@@ -1,0 +1,8 @@
+INT	int 
+ID	main
+LPAREN	(
+RPAREN	)
+LBRACE	{
+INT	int 
+ASSIGNMENT_OPERATOR	=
+RBRACE	}
